@@ -10,6 +10,8 @@ include_directories(src)
 
 add_executable(${PROJ_NAME}
 	src/main.cpp
+	src/compiler.cpp
+	src/vm.cpp
 )
 
 #target_link_libraries(${PROJ_NAME} )
