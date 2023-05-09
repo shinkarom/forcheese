@@ -12,18 +12,23 @@ int main(int argc, char *argv[])
 		std::cerr<<"Error: no input file."<<std::endl;
 		return 1;
 	}
-	std::string fileName(argv[1]);
-	
 	std::ifstream ifs;
-	ifs.open(fileName, std::fstream::in);
-	if(ifs.fail())
-	{
-		std::cerr<<"Error: couldn't open file"<<std::endl;
-		return 1;
+	try {
+		std::string fileName(argv[1]);
+		
+		ifs.open(fileName, std::fstream::in);
+		if(ifs.fail())
+		{
+			std::cerr<<"Error: couldn't open file"<<std::endl;
+			return 1;
+		}
+		initVM();
+		std::cout<<"Running "<<fileName<<"..."<<std::endl;
+		compile(ifs);
 	}
-	initVM();
-	std::cout<<"Running "<<fileName<<"..."<<std::endl;
-	compile(ifs);
+	catch(const std::exception& e) {
+		std::cerr<<"Error: "<<e.what()<<std::endl;
+	}
 	freeVM();
 	ifs.close();
 	return 0;
