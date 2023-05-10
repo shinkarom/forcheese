@@ -53,6 +53,7 @@ WordEntry* findWord(std::string searchTerm);
 void addWord(std::string wordName, bool isMacro, BuiltinFunc handler = nullptr);
 void addWordHere(std::string wordName, bool isMacro);
 void addBuiltin(std::string wordName, bool isMacro, BuiltinFunc handler);
+void runXT(CellType xt);
 void executeXT(CellType xt);
 void compileXT(CellType xt);
 std::string parseWord();

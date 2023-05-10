@@ -189,24 +189,39 @@ void addBuiltin(std::string wordName, bool isMacro, BuiltinFunc handler) {
 	addEntry(wordName, thisEntry);
 }
 
-void executeXT(CellType xt) {
+void executeBuiltin(CellType xt) {
+	uint64_t s = -xt - 1;
+	if(s >= builtinHandlers.size()) {
+		std::cout<<"Error: wrong builtin xt: "<<xt<<"."<<std::endl;
+		return;
+	}
+	builtinHandlers[s]();
+}
+
+void runXT(CellType xt) {
+	//std::cout<<"run xt "<<xt<<std::endl;
 	if(xt >= 0) {
-		//std::cout<<"execute xt "<<xt<<std::endl;
+		ipPointer = xt;
+		CellType x;
 		auto before = returnStack.size();
-		push(returnStack, ipPointer);
 		do {
-			auto x = readCell(heap, ipPointer);
+			x = readCell(heap, ipPointer);
+			//std::cout<<"execute xt "<<x<<" from "<<ipPointer<<std::endl;
 			ipPointer += CellSize;
 			executeXT(x);
-		} while(returnStack.size() > before);
+		} while(x != returnXT || returnStack.size() >= before);
 	} else {
-		uint64_t s = -xt - 1;
-		if(s >= builtinHandlers.size()) {
-			std::cout<<"Error: wrong builtin xt: "<<xt<<"."<<std::endl;
-			return;
-		}
-		//std::cout<<"execute builtin "<<xt<<std::endl;
-		builtinHandlers[s]();
+		executeBuiltin(xt);
+	} 
+}
+
+void executeXT(CellType xt) {
+	//std::cout<<"execute xt "<<xt<<std::endl;
+	if(xt >= 0) {
+		push(returnStack, ipPointer);
+		ipPointer = xt;
+	} else {
+		executeBuiltin(xt);
 	}
 }
 

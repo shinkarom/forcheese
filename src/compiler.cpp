@@ -10,7 +10,7 @@ void compile(std::istream& str) {
 		auto entry = findWord(s);
 		if(entry) {
 			if(entry->isMacro) {
-				executeXT(entry->xt);
+				runXT(entry->xt);
 			} else {
 				compileXT(entry->xt);
 			}
