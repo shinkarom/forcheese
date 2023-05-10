@@ -2,31 +2,26 @@
 
 #include "compiler.hpp"
 
-std::string readWord(std::istream& str) {
-	std::string lexeme("");
-	str>>lexeme;
-	return lexeme;
-}
-
 void compile(std::istream& str) {
 	inputStream = &str;
 	while(!str.eof()) {
-		auto s = readWord(str);
-		std::cout<<"Read word \""<<s<<"\""<<std::endl;
+		auto s = parseWord();
+		//std::cout<<"read word \""<<s<<"\""<<std::endl;
 		auto entry = findWord(s);
 		if(entry) {
 			if(entry->isMacro) {
 				executeXT(entry->xt);
 			} else {
-				// compile
+				compileXT(entry->xt);
 			}
 		} else {
-			/*
-			if number:
-				literal
-			else:
-				error
-			*/
+			if(isNumber(s)) {
+				auto n = toNumber(s);
+				compileNumber(n);
+			} else {
+				std::cout<<"Error: unknown word \""<<s<<"\"."<<std::endl;
+				break;
+			}
 		}	
 	}
 }
