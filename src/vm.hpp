@@ -2,8 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
-#include <deque>
 #include <list>
 
 #include "common.hpp"
@@ -15,14 +13,14 @@ struct WordEntry {
 	bool isBuiltin = false;
 	bool isVisible = true;
 	CellType xt;
-	BuiltinFunc handler;
+	std::string name;
 };
 
 using WordEntries = std::list<WordEntry>;
-using Stack = std::deque<CellType>;
+using Stack = std::list<CellType>;
 using Heap = std::vector<uint8_t>;
 
-extern std::map<std::string, WordEntries> dictionary;
+extern std::list<WordEntry> dictionary;
 extern Stack dataStack;
 extern Stack returnStack;
 extern Heap heap;

@@ -2,7 +2,7 @@
 
 #include "vm.hpp"
 
-std::map<std::string, WordEntries> dictionary;
+std::list< WordEntry> dictionary;
 Heap heap(HeapSize);
 Stack dataStack(MinStackSize);
 Stack returnStack(MinStackSize);
@@ -81,7 +81,7 @@ void doDoubleColon() {
 }
 
 void doSemicolon() {
-	lastEntry->isVisible = true;
+	dictionary.front().isVisible = true;
 	writeCellAndIncHere(heap, returnXT);
 }
 
@@ -147,28 +147,18 @@ void freeVM() {
 }
 
 WordEntry* findWord(std::string searchTerm) {
-	const auto searchResult = dictionary.find(searchTerm);
-	if(searchResult != dictionary.end()) {
-		return &(searchResult->second.back());
-	} else {
-		return nullptr;
+	for(auto it = dictionary.begin(); it != dictionary.end(); ++it) {
+		if(it->name == searchTerm && it->isVisible) {
+			//std::cout<<"found \""<<searchTerm<<"\""<<std::endl;
+			return &(*it);
+		}
 	}
+	return nullptr;
 }
 
-void addEntry(std::string wordName, WordEntry entry) {
-	WordEntries e;
-	
-	const auto searchResult = dictionary.find(wordName);
-	
-	if(searchResult != dictionary.end()) {
-		e = searchResult->second;
-		e.push_back(entry);
-	} else {
-		e = WordEntries();
-		e.push_back(entry);
-		dictionary.insert({wordName, e});
-	}
-	lastEntry = &entry;
+void addEntry(WordEntry entry) {
+	//std::cout<<"adding entry \""<<entry.name<<"\""<<std::endl;
+	dictionary.push_front(entry);
 }
 
 void addWordHere(std::string wordName, bool isMacro) {
@@ -176,8 +166,9 @@ void addWordHere(std::string wordName, bool isMacro) {
 	thisEntry.isMacro = isMacro;
 	thisEntry.isBuiltin = false;
 	thisEntry.xt = herePointer;
+	thisEntry.name = wordName;
 	
-	addEntry(wordName, thisEntry);
+	addEntry(thisEntry);
 }
 
 void addBuiltin(std::string wordName, bool isMacro, BuiltinFunc handler) {
@@ -185,8 +176,9 @@ void addBuiltin(std::string wordName, bool isMacro, BuiltinFunc handler) {
 	thisEntry.isMacro = isMacro;
 	thisEntry.isBuiltin = true;
 	thisEntry.xt = addToHandlers(handler);
+	thisEntry.name = wordName;
 	
-	addEntry(wordName, thisEntry);
+	addEntry(thisEntry);
 }
 
 void executeBuiltin(CellType xt) {
@@ -204,12 +196,15 @@ void runXT(CellType xt) {
 		ipPointer = xt;
 		CellType x;
 		auto before = returnStack.size();
-		do {
+		while(true) {
 			x = readCell(heap, ipPointer);
 			//std::cout<<"execute xt "<<x<<" from "<<ipPointer<<std::endl;
 			ipPointer += CellSize;
+			if(x == returnXT && returnStack.size() == before) {
+				break;
+			}
 			executeXT(x);
-		} while(x != returnXT || returnStack.size() >= before);
+		};
 	} else {
 		executeBuiltin(xt);
 	} 
