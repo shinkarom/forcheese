@@ -12,8 +12,6 @@ std::istream* inputStream;
 CellType herePointer;
 CellType ipPointer;
 
-WordEntry* lastEntry;
-
 CellType pushCompiledNumberXT;
 CellType returnXT;
 
@@ -70,52 +68,13 @@ void push(Stack& stack, CellType value) {
 	//std::cout<<"push "<<value<<std::endl;
 }
 
-void doColon() {
-	auto s = parseWord();
-	addWordHere(s, false);
-}
-
-void doDoubleColon() {
-	auto s = parseWord();
-	addWordHere(s, true);
-}
-
-void doSemicolon() {
-	dictionary.front().isVisible = true;
-	writeCellAndIncHere(heap, returnXT);
-}
-
-void doPushCompiledNumber() {
-	CellType x = readCell(heap, ipPointer);
-	push(dataStack, x);
-	ipPointer += CellSize;
-}
-
-void doComma() {
-	CellType x = pop(dataStack);
-	writeCellAndIncHere(heap, x);
-}
-
-void doPlus() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a + b);
-}
-
-void doDot() {
-	auto x = pop(dataStack);
-	std::cout<<x;
-}
-
-void doDup() {
-	auto x = pop(dataStack);
-	push(dataStack, x);
-	push(dataStack, x);
-}
-
-void doReturn() {
-	auto x = pop(returnStack);
-	ipPointer = x;
+void removeLastEntry() {
+	//std::cout<<"remove \""<<dictionary.front().name<<"\""<<std::endl;
+	dictionary.pop_front();
+	herePointer = dictionary.front().xt;
+	if(herePointer < 0){
+		herePointer = 0;
+	}
 }
 
 void initVM() {
@@ -128,21 +87,41 @@ void initVM() {
 	builtinHandlers.clear();
 	herePointer = 0;
 	ipPointer = 0;
-	lastEntry = nullptr;
-	
-	returnXT = addToHandlers(&doReturn);
-	pushCompiledNumberXT = addToHandlers(&doPushCompiledNumber);
-	
-	addBuiltin(",", false, &doComma);
-	addBuiltin(":", true, &doColon);
-	addBuiltin("::", true, &doDoubleColon);
-	addBuiltin(";", true, &doSemicolon);
-	addBuiltin("+", false, &doPlus);
-	addBuiltin(".", false, &doDot);
-	addBuiltin("dup", false, &doDup);
 }
 
 void freeVM() {
+	
+}
+
+void addEntry(WordEntry entry) {
+	//std::cout<<"add entry \""<<entry.name<<"\" with xt "<<entry.xt<<std::endl;
+	dictionary.push_front(entry);
+}
+
+bool hasAnon() {
+	return dictionary.front().isAnon;
+}
+
+void createAnon() {
+	WordEntry thisEntry;
+	thisEntry.isAnon = true;
+	thisEntry.xt = herePointer;
+	thisEntry.name = "";
+	addEntry(thisEntry);
+}
+
+void endAnon() {
+	if(!hasAnon()) {
+		return;
+	}
+	if(readCellHere(heap) != returnXT) {
+		writeCellAndIncHere(heap, returnXT);
+	}
+	auto anon = dictionary.front();
+	if(anon.xt != herePointer) {
+		runXT(anon.xt);
+	}
+	removeLastEntry();	
 	
 }
 
@@ -156,15 +135,11 @@ WordEntry* findWord(std::string searchTerm) {
 	return nullptr;
 }
 
-void addEntry(WordEntry entry) {
-	//std::cout<<"adding entry \""<<entry.name<<"\""<<std::endl;
-	dictionary.push_front(entry);
-}
+
 
 void addWordHere(std::string wordName, bool isMacro) {
 	WordEntry thisEntry;
 	thisEntry.isMacro = isMacro;
-	thisEntry.isBuiltin = false;
 	thisEntry.xt = herePointer;
 	thisEntry.name = wordName;
 	
@@ -198,7 +173,6 @@ void runXT(CellType xt) {
 		auto before = returnStack.size();
 		while(true) {
 			x = readCell(heap, ipPointer);
-			//std::cout<<"execute xt "<<x<<" from "<<ipPointer<<std::endl;
 			ipPointer += CellSize;
 			if(x == returnXT && returnStack.size() == before) {
 				break;

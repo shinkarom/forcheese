@@ -5,6 +5,7 @@
 #include "common.hpp"
 #include "vm.hpp"
 #include "compiler.hpp"
+#include "builtins_core.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,8 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 		initVM();
+		addCoreBuiltins();
+		createAnon();
 		std::cout<<"Running "<<fileName<<"..."<<std::endl;
 		compile(ifs);
 	}

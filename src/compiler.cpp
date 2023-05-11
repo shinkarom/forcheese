@@ -24,4 +24,7 @@ void compile(std::istream& str) {
 			}
 		}	
 	}
+	if(hasAnon()) {
+		endAnon();
+	}
 }
