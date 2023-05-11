@@ -30,7 +30,7 @@ extern std::istream* inputStream;
 
 extern WordEntry* lastEntry;
 
-extern CellType herePoiter;
+extern CellType herePointer;
 extern CellType ipPointer;
 
 extern CellType compileNumberXT;
