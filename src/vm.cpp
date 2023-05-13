@@ -2,18 +2,39 @@
 
 #include "vm.hpp"
 
-std::list< WordEntry> dictionary;
 Heap heap(HeapSize);
 Stack dataStack(MinStackSize);
 Stack returnStack(MinStackSize);
 std::vector<BuiltinFunc> builtinHandlers;
 std::istream* inputStream;
 
+CellType pushCompiledNumberXT;
+CellType returnXT;
+
 CellType herePointer;
 CellType ipPointer;
 
-CellType pushCompiledNumberXT;
-CellType returnXT;
+CellType addToHandlers(BuiltinFunc handler) {
+	CellType xt = -1 - (builtinHandlers.size());
+	//std::cout<<"add handler "<<xt<<std::endl;
+	builtinHandlers.push_back(handler);
+	return xt;
+}
+
+CellType pop(Stack& stack) {
+	if(stack.size() == 0) {
+		std::cout<<"Error: stack underflow."<<std::endl;
+	}
+	CellType x = stack.back();
+	stack.pop_back();
+	//std::cout<<"pop "<<x<<std::endl;
+	return x;
+}
+
+void push(Stack& stack, CellType value) {
+	stack.push_back(value);
+	//std::cout<<"push "<<value<<std::endl;
+}
 
 CellType readCell(Heap& area, size_t position) {
 	auto pointer = &(area.data()[position]);
@@ -49,34 +70,6 @@ void writeCellAndIncHere(Heap& area, CellType value) {
 	herePointer += CellSize;
 }
 
-CellType addToHandlers(BuiltinFunc handler) {
-	CellType xt = -1 - (builtinHandlers.size());
-	//std::cout<<"add handler "<<xt<<std::endl;
-	builtinHandlers.push_back(handler);
-	return xt;
-}
-
-CellType pop(Stack& stack) {
-	CellType x = stack.back();
-	stack.pop_back();
-	//std::cout<<"pop "<<x<<std::endl;
-	return x;
-}
-
-void push(Stack& stack, CellType value) {
-	stack.push_back(value);
-	//std::cout<<"push "<<value<<std::endl;
-}
-
-void removeLastEntry() {
-	//std::cout<<"remove \""<<dictionary.front().name<<"\""<<std::endl;
-	dictionary.pop_front();
-	herePointer = dictionary.front().xt;
-	if(herePointer < 0){
-		herePointer = 0;
-	}
-}
-
 void initVM() {
 	for(size_t i = 0; i < heap.size(); i++) {
 		heap[i] = 0;
@@ -93,13 +86,8 @@ void freeVM() {
 	
 }
 
-void addEntry(WordEntry entry) {
-	//std::cout<<"add entry \""<<entry.name<<"\" with xt "<<entry.xt<<std::endl;
-	dictionary.push_front(entry);
-}
-
 bool hasAnon() {
-	return dictionary.front().isAnon;
+	return dictionary.lastEntry().isAnon;
 }
 
 void createAnon() {
@@ -107,7 +95,7 @@ void createAnon() {
 	thisEntry.isAnon = true;
 	thisEntry.xt = herePointer;
 	thisEntry.name = "";
-	addEntry(thisEntry);
+	dictionary.addEntry(thisEntry);
 }
 
 void endAnon() {
@@ -117,43 +105,33 @@ void endAnon() {
 	if(readCellHere(heap) != returnXT) {
 		writeCellAndIncHere(heap, returnXT);
 	}
-	auto anon = dictionary.front();
+	auto anon = dictionary.lastEntry();
 	if(anon.xt != herePointer) {
 		runXT(anon.xt);
 	}
-	removeLastEntry();	
+	dictionary.removeLast();	
 	
 }
-
-WordEntry* findWord(std::string searchTerm) {
-	for(auto it = dictionary.begin(); it != dictionary.end(); ++it) {
-		if(it->name == searchTerm && it->isVisible) {
-			//std::cout<<"found \""<<searchTerm<<"\""<<std::endl;
-			return &(*it);
-		}
-	}
-	return nullptr;
-}
-
-
 
 void addWordHere(std::string wordName, bool isMacro) {
 	WordEntry thisEntry;
 	thisEntry.isMacro = isMacro;
+	thisEntry.isVisible = false;
 	thisEntry.xt = herePointer;
 	thisEntry.name = wordName;
 	
-	addEntry(thisEntry);
+	dictionary.addEntry(thisEntry);
 }
 
 void addBuiltin(std::string wordName, bool isMacro, BuiltinFunc handler) {
 	WordEntry thisEntry;
 	thisEntry.isMacro = isMacro;
 	thisEntry.isBuiltin = true;
+	thisEntry.isVisible = true;
 	thisEntry.xt = addToHandlers(handler);
 	thisEntry.name = wordName;
 	
-	addEntry(thisEntry);
+	dictionary.addEntry(thisEntry);
 }
 
 void executeBuiltin(CellType xt) {

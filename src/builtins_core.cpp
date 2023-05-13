@@ -18,7 +18,7 @@ void doDoubleColon() {
 void doSemicolon() {
 	writeCellAndIncHere(heap, returnXT);
 	endAnon();
-	dictionary.front().isVisible = true;
+	dictionary.lastEntry().isVisible = true;
 	createAnon();
 }
 

@@ -7,7 +7,7 @@ void compile(std::istream& str) {
 	while(!str.eof()) {
 		auto s = parseWord();
 		//std::cout<<"read word \""<<s<<"\""<<std::endl;
-		auto entry = findWord(s);
+		auto entry = dictionary.findWord(s);
 		if(entry) {
 			if(entry->isMacro) {
 				runXT(entry->xt);
