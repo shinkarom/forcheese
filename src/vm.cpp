@@ -144,7 +144,7 @@ void executeBuiltin(CellType xt) {
 }
 
 void runXT(CellType xt) {
-	//std::cout<<"run xt "<<xt<<std::endl;
+	//std::cout<<"run "<<xt<<" \""<<dictionary.findName(xt)<<"\""<<std::endl;
 	if(xt >= 0) {
 		ipPointer = xt;
 		CellType x;
@@ -163,7 +163,7 @@ void runXT(CellType xt) {
 }
 
 void executeXT(CellType xt) {
-	//std::cout<<"execute xt "<<xt<<std::endl;
+	//std::cout<<"execute "<<xt<<" \""<<dictionary.findName(xt)<<"\""<<std::endl;
 	if(xt >= 0) {
 		push(returnStack, ipPointer);
 		ipPointer = xt;
@@ -173,13 +173,14 @@ void executeXT(CellType xt) {
 }
 
 void compileXT(CellType xt) {
-	//std::cout<<"compile xt "<<xt<<std::endl;
+	//std::cout<<"compile "<<xt<<" \""<<dictionary.findName(xt)<<"\""<<std::endl;
 	writeCellAndIncHere(heap, xt);
 }
 
 std::string parseWord() {
 	std::string s;
 	*inputStream >> s;
+	//std::cout<<"parsed \""<<s<<"\""<<std::endl;
 	return s;
 }
 

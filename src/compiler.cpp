@@ -6,9 +6,11 @@ void compile(std::istream& str) {
 	inputStream = &str;
 	while(!str.eof()) {
 		auto s = parseWord();
-		//std::cout<<"read word \""<<s<<"\""<<std::endl;
 		auto entry = dictionary.findWord(s);
 		if(entry) {
+			if(entry->name=="") {
+				continue;
+			}
 			if(entry->isMacro) {
 				runXT(entry->xt);
 			} else {

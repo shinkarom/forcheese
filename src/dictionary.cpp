@@ -22,6 +22,16 @@ WordEntry* Dictionary::findWord(std::string searchTerm) {
 	return nullptr;
 }
 
+std::string Dictionary::findName(CellType xt) {
+	for(auto it = dict.begin(); it != dict.end(); ++it) {
+		if(it->xt == xt) {
+			//std::cout<<"found \""<<searchTerm<<"\" at "<<it->xt<<std::endl;
+			return it->name;
+		}
+	}
+	return "unknown xt";
+}
+
 void Dictionary::removeLast() {
 	extern CellType herePointer;
 	//std::cout<<"remove \""<<dictionary.front().name<<"\""<<std::endl;

@@ -23,6 +23,7 @@ class Dictionary {
 		void addEntry(WordEntry entry);
 		void removeLast();
 		WordEntry* findWord(std::string searchTerm);
+		std::string findName(CellType xt);
 	private:
 		std::list<WordEntry> dict;
 };

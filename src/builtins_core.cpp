@@ -138,6 +138,80 @@ void do2Swap() {
 	push(dataStack, b);
 }
 
+void doMore() {
+	auto n2 = pop(dataStack);
+	auto n1 = pop(dataStack);
+	push(dataStack, (n1>n2)?0:!0);
+}
+
+void doLess() {
+	auto n2 = pop(dataStack);
+	auto n1 = pop(dataStack);
+	push(dataStack, (n1<n2)?0:!0);
+}
+
+void doUMore() {
+	auto n2 = (uint64_t)(pop(dataStack));
+	auto n1 = (uint64_t)(pop(dataStack));
+	push(dataStack, (n1>n2)?0:!0);
+}
+
+void doULess() {
+	auto n2 = (uint64_t)(pop(dataStack));
+	auto n1 = (uint64_t)(pop(dataStack));
+	push(dataStack, (n1<n2)?0:!0);
+}
+
+void doEqual() {
+	auto n2 = pop(dataStack);
+	auto n1 = pop(dataStack);
+	push(dataStack, (n1=n2)?0:!0);
+}
+
+void doNotEqual() {
+	auto n2 = pop(dataStack);
+	auto n1 = pop(dataStack);
+	push(dataStack, (n1!=n2)?0:!0);
+}
+
+void doEmit() {
+	auto c = pop(dataStack);
+	if(c>=' '&&c<='z') {
+		std::cout<<(char)c;
+	}
+}
+
+void doCompileComma() {
+	auto xt = pop(dataStack);
+	compileXT(xt);
+}
+
+void doLiteral() {
+	auto n = pop(dataStack);
+	compileNumber(n);
+}
+
+void doPostpone() {
+	auto s = parseWord();
+	auto entry = dictionary.findWord(s);
+	if(entry && entry->name!="") {
+		if(entry->isMacro) {
+			compileXT(entry->xt);
+		} else {
+			push(dataStack, entry->xt);
+			doCompileComma();
+		}
+	} else {
+		if(isNumber(s)) {
+			auto n = toNumber(s);
+			push(dataStack, n);
+			doLiteral();
+		} else {
+			std::cout<<"Error: unknown word \""<<s<<"\"."<<std::endl;
+		}
+	}	
+}
+
 void addCoreBuiltins() {
 	returnXT = addToHandlers(&doReturn);
 	pushCompiledNumberXT = addToHandlers(&doPushCompiledNumber);
@@ -160,4 +234,15 @@ void addCoreBuiltins() {
 	addBuiltin("2pop", false, &do2Pop);
 	addBuiltin("2over", false, &do2Over);
 	addBuiltin("here", false, &doHere);
+	addBuiltin(">", false, &doMore);
+	addBuiltin("<", false, &doLess);
+	addBuiltin("u>", false, &doUMore);
+	addBuiltin("u<", false, &doULess);
+	addBuiltin("=", false, &doEqual);
+	addBuiltin("<>", false, &doNotEqual);
+	addBuiltin("emit", false, &doEmit);
+	addBuiltin("postpone", true, &doPostpone);
+	addBuiltin("literal", false, &doLiteral);
+	addBuiltin(",", false, &doComma);
+	addBuiltin("compile,", false, &doCompileComma);
 }
