@@ -212,6 +212,31 @@ void doPostpone() {
 	}	
 }
 
+void doBl() {
+	push(dataStack, (CellType)(' '));
+}
+
+void doExclamationMark() {
+	auto addr = pop(dataStack);
+	auto x = pop(dataStack);
+	writeCell(heap, addr, x);
+}
+
+void doAt() {
+	auto addr = pop(dataStack);
+	auto x = readCell(heap, addr);
+	push(dataStack, x);
+}
+
+void doDivMod() {
+	auto n2 = pop(dataStack);
+	auto n1 = pop(dataStack);
+	auto n3 = n1 % n2;
+	auto n4 = n1 / n2;
+	push(dataStack, n3);
+	push(dataStack, n4);
+}
+
 void addCoreBuiltins() {
 	returnXT = addToHandlers(&doReturn);
 	pushCompiledNumberXT = addToHandlers(&doPushCompiledNumber);
@@ -245,4 +270,8 @@ void addCoreBuiltins() {
 	addBuiltin("literal", false, &doLiteral);
 	addBuiltin(",", false, &doComma);
 	addBuiltin("compile,", false, &doCompileComma);
+	addBuiltin("bl", false, &doBl);
+	addBuiltin("!", false, &doExclamationMark);
+	addBuiltin("@", false, &doAt);
+	addBuiltin("/mod", false, &doDivMod);
 }
