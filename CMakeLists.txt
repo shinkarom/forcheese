@@ -14,6 +14,7 @@ add_executable(${PROJ_NAME}
 	src/vm.cpp
 	src/builtins_core.cpp
 	src/dictionary.cpp
+	src/stack.cpp
 )
 
 #target_link_libraries(${PROJ_NAME} )

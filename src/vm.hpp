@@ -6,8 +6,8 @@
 
 #include "common.hpp"
 #include "dictionary.hpp"
+#include "stack.hpp"
 
-using Stack = std::list<CellType>;
 using Heap = std::vector<uint8_t>;
 
 extern Stack dataStack;
@@ -33,9 +33,6 @@ CellType readCellAndIncHere(Heap& area);
 void writeCell(Heap& area, size_t position, CellType value);
 void writeCellHere(Heap& area, CellType value);
 void writeCellAndIncHere(Heap& area, CellType value);
-
-CellType pop(Stack& stack);
-void push(Stack& stack, CellType value);
 
 void addWord(std::string wordName, bool isMacro, BuiltinFunc handler = nullptr);
 void addWordHere(std::string wordName, bool isMacro);

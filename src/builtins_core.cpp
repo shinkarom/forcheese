@@ -24,170 +24,168 @@ void doSemicolon() {
 
 void doPushCompiledNumber() {
 	CellType x = readCell(heap, ipPointer);
-	push(dataStack, x);
+	dataStack.push(x);
 	ipPointer += CellSize;
 }
 
 void doComma() {
-	CellType x = pop(dataStack);
+	CellType x = dataStack.pop();
 	writeCellAndIncHere(heap, x);
 }
 
 void doPlus() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a + b);
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a + b);
 }
 
 void doDot() {
-	auto x = pop(dataStack);
+	auto x = dataStack.pop();
 	std::cout<<x;
 }
 
 void doDup() {
-	auto x = pop(dataStack);
-	push(dataStack, x);
-	push(dataStack, x);
+	auto x = dataStack.pop();
+	dataStack.push(x);
+	dataStack.push(x);
 }
 
 void doReturn() {
-	auto x = pop(returnStack);
+	auto x = returnStack.pop();
 	ipPointer = x;
 }
 
 void doMinus() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a - b);
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a - b);
 }
 
 void doMultiply() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a * b);
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a * b);
 }
 
 void doSwap() {
-	auto a = pop(dataStack);
-	auto b = pop(dataStack);
-	push(dataStack, a);
-	push(dataStack, b);
+	auto a = dataStack.pop();
+	auto b = dataStack.pop();
+	dataStack.push(a);
+	dataStack.push(b);
 }
 void doRot() {
-	auto c = pop(dataStack);
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, b);
-	push(dataStack, c);
-	push(dataStack, a);
+	auto c = dataStack.pop();
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(b);
+	dataStack.push(c);
+	dataStack.push(a);
 }
 
 void doPop() {
-	pop(dataStack);
+	dataStack.pop();
 }
 
 void doOver() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a);
-	push(dataStack, b);
-	push(dataStack, a);
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a);
+	dataStack.push(b);
+	dataStack.push(a);
 }
 
 void doHere() {
-	push(dataStack, herePointer);
+	dataStack.push(herePointer);
 }
 
 void do2Pop() {
-	pop(dataStack);
-	pop(dataStack);
-	pop(dataStack);
-	pop(dataStack);
+	dataStack.pop();
+	dataStack.pop();
 }
 
 void do2Dup() {
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a);
-	push(dataStack, b);
-	push(dataStack, a);
-	push(dataStack, b);
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a);
+	dataStack.push(b);
+	dataStack.push(a);
+	dataStack.push(b);
 }
 
 void do2Over() {
-	auto d = pop(dataStack);
-	auto c = pop(dataStack);
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, a);
-	push(dataStack, b);
-	push(dataStack, c);
-	push(dataStack, d);
-	push(dataStack, a);
-	push(dataStack, b);
+	auto d = dataStack.pop();
+	auto c = dataStack.pop();
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(a);
+	dataStack.push(b);
+	dataStack.push(c);
+	dataStack.push(d);
+	dataStack.push(a);
+	dataStack.push(b);
 }
 
 void do2Swap() {
-	auto d = pop(dataStack);
-	auto c = pop(dataStack);
-	auto b = pop(dataStack);
-	auto a = pop(dataStack);
-	push(dataStack, c);
-	push(dataStack, d);
-	push(dataStack, a);
-	push(dataStack, b);
+	auto d = dataStack.pop();
+	auto c = dataStack.pop();
+	auto b = dataStack.pop();
+	auto a = dataStack.pop();
+	dataStack.push(c);
+	dataStack.push(d);
+	dataStack.push(a);
+	dataStack.push(b);
 }
 
 void doMore() {
-	auto n2 = pop(dataStack);
-	auto n1 = pop(dataStack);
-	push(dataStack, (n1>n2)?0:!0);
+	auto n2 = dataStack.pop();
+	auto n1 = dataStack.pop();
+	dataStack.push((n1>n2)?0:!0);
 }
 
 void doLess() {
-	auto n2 = pop(dataStack);
-	auto n1 = pop(dataStack);
-	push(dataStack, (n1<n2)?0:!0);
+	auto n2 = dataStack.pop();
+	auto n1 = dataStack.pop();
+	dataStack.push((n1<n2)?0:!0);
 }
 
 void doUMore() {
-	auto n2 = (uint64_t)(pop(dataStack));
-	auto n1 = (uint64_t)(pop(dataStack));
-	push(dataStack, (n1>n2)?0:!0);
+	auto n2 = (uint64_t)(dataStack.pop());
+	auto n1 = (uint64_t)(dataStack.pop());
+	dataStack.push((n1>n2)?0:!0);
 }
 
 void doULess() {
-	auto n2 = (uint64_t)(pop(dataStack));
-	auto n1 = (uint64_t)(pop(dataStack));
-	push(dataStack, (n1<n2)?0:!0);
+	auto n2 = (uint64_t)(dataStack.pop());
+	auto n1 = (uint64_t)(dataStack.pop());
+	dataStack.push((n1<n2)?0:!0);
 }
 
 void doEqual() {
-	auto n2 = pop(dataStack);
-	auto n1 = pop(dataStack);
-	push(dataStack, (n1=n2)?0:!0);
+	auto n2 = dataStack.pop();
+	auto n1 = dataStack.pop();
+	dataStack.push((n1=n2)?0:!0);
 }
 
 void doNotEqual() {
-	auto n2 = pop(dataStack);
-	auto n1 = pop(dataStack);
-	push(dataStack, (n1!=n2)?0:!0);
+	auto n2 = dataStack.pop();
+	auto n1 = dataStack.pop();
+	dataStack.push((n1!=n2)?0:!0);
 }
 
 void doEmit() {
-	auto c = pop(dataStack);
+	auto c = dataStack.pop();
 	if(c>=' '&&c<='z') {
 		std::cout<<(char)c;
 	}
 }
 
 void doCompileComma() {
-	auto xt = pop(dataStack);
+	auto xt = dataStack.pop();
 	compileXT(xt);
 }
 
 void doLiteral() {
-	auto n = pop(dataStack);
+	auto n = dataStack.pop();
 	compileNumber(n);
 }
 
@@ -198,13 +196,13 @@ void doPostpone() {
 		if(entry->isMacro) {
 			compileXT(entry->xt);
 		} else {
-			push(dataStack, entry->xt);
+			dataStack.push(entry->xt);
 			doCompileComma();
 		}
 	} else {
 		if(isNumber(s)) {
 			auto n = toNumber(s);
-			push(dataStack, n);
+			dataStack.push(n);
 			doLiteral();
 		} else {
 			std::cout<<"Error: unknown word \""<<s<<"\"."<<std::endl;
@@ -213,28 +211,28 @@ void doPostpone() {
 }
 
 void doBl() {
-	push(dataStack, (CellType)(' '));
+	dataStack.push((CellType)(' '));
 }
 
 void doExclamationMark() {
-	auto addr = pop(dataStack);
-	auto x = pop(dataStack);
+	auto addr = dataStack.pop();
+	auto x = dataStack.pop();
 	writeCell(heap, addr, x);
 }
 
 void doAt() {
-	auto addr = pop(dataStack);
+	auto addr = dataStack.pop();
 	auto x = readCell(heap, addr);
-	push(dataStack, x);
+	dataStack.push(x);
 }
 
 void doDivMod() {
-	auto n2 = pop(dataStack);
-	auto n1 = pop(dataStack);
+	auto n2 = dataStack.pop();
+	auto n1 = dataStack.pop();
 	auto n3 = n1 % n2;
 	auto n4 = n1 / n2;
-	push(dataStack, n3);
-	push(dataStack, n4);
+	dataStack.push(n3);
+	dataStack.push(n4);
 }
 
 void addCoreBuiltins() {

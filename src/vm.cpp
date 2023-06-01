@@ -3,8 +3,8 @@
 #include "vm.hpp"
 
 Heap heap(HeapSize);
-Stack dataStack(MinStackSize);
-Stack returnStack(MinStackSize);
+Stack dataStack;
+Stack returnStack;
 std::vector<BuiltinFunc> builtinHandlers;
 std::istream* inputStream;
 
@@ -19,21 +19,6 @@ CellType addToHandlers(BuiltinFunc handler) {
 	//std::cout<<"add handler "<<xt<<std::endl;
 	builtinHandlers.push_back(handler);
 	return xt;
-}
-
-CellType pop(Stack& stack) {
-	if(stack.size() == 0) {
-		std::cout<<"Error: stack underflow."<<std::endl;
-	}
-	CellType x = stack.back();
-	stack.pop_back();
-	//std::cout<<"pop "<<x<<std::endl;
-	return x;
-}
-
-void push(Stack& stack, CellType value) {
-	stack.push_back(value);
-	//std::cout<<"push "<<value<<std::endl;
 }
 
 CellType readCell(Heap& area, size_t position) {
@@ -165,7 +150,7 @@ void runXT(CellType xt) {
 void executeXT(CellType xt) {
 	//std::cout<<"execute "<<xt<<" \""<<dictionary.findName(xt)<<"\""<<std::endl;
 	if(xt >= 0) {
-		push(returnStack, ipPointer);
+		returnStack.push(ipPointer);
 		ipPointer = xt;
 	} else {
 		executeBuiltin(xt);
